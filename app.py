@@ -1,5 +1,4 @@
 import os
-
 import google.generativeai as genai
 import streamlit as st
 from PyPDF2 import PdfReader
@@ -47,7 +46,7 @@ def get_vector_store(text_chunks):
 def get_conversational_chain():
     prompt_template = """
     Answer the question as detailed as possible from the provided context. If the answer is not in the provided context, 
-    say 'Answer rephrase to help me find answer for you in the right context.' Please do not make up information. \n\n
+    say 'Please try to rephrase it better to help me find answer for you in the right context.' Please do not make up information. \n\n
     Context: \n {context}\n
     Question: \n{question}\n
     Answer:
@@ -61,26 +60,19 @@ def get_conversational_chain():
 # Function to process user input and respond based on FAISS search
 def user_input(user_question):
     if "faiss_index" not in st.session_state:
-        st.error("Please upload and process PDF files first.")
+        st.error("Please upload a PDF file Click process and begin your conversation.")
         return
-
-    # Retrieve the FAISS index from session state
-    faiss_index = st.session_state['faiss_index']
-    docs = faiss_index.similarity_search(user_question)
-    chain = get_conversational_chain()
-    response = chain({"input_documents": docs, "question": user_question}, return_only_outputs=True)
-
-    st.write("Reply: ", response["output_text"])
-
-
-def safe_run(func):
     try:
-        result = func()
-        return result
+        # Retrieve the FAISS index from session state
+        faiss_index = st.session_state['faiss_index']
+        docs = faiss_index.similarity_search(user_question)
+        chain = get_conversational_chain()
+        response = chain({"input_documents": docs, "question": user_question}, return_only_outputs=True)
+
+        return st.write("Reply: ", response["output_text"])
     except Exception as e:
-        st.error(f"An error occurred: {str(e)}")
-        # Log the error for further investigation if needed
-        print(f"Error: {str(e)}")
+        st.error(f"Sorry it look like something went wrong: {str(e)}")
+        return None
 
 
 # Main function to run the Streamlit app
@@ -94,26 +86,27 @@ def main():
         <style>
         /* Background gradient for the page */
         body {
-            background: linear-gradient(to bottom right, #f0f4c3, #b3e5fc);
+            background: linear-gradient(to bottom right, #f0f4c3, #b3e7fc);
         }
 
         /* Alfred-Tech header styling */
         h1 {
             text-align: center;
-            font-size: 52px;
+            font-size: 32px;
             font-family: 'Arial', sans-serif;
             font-weight: bold;
-            color: #f57c00;
-            text-shadow: 2px 2px 5px #ffa726;
+            color: white;
+            text-shadow: 2px 2px 5px #02BADF;
         }
 
         /* PDF Chat header styling */
         h2 {
             text-align: center;
-            font-size: 36px;
+            font-size: 46px;
             font-family: 'Arial', sans-serif;
             color: #1976d2;
-            text-shadow: 2px 2px 5px #64b5f6;
+        
+            
         }
 
         /* Styling for the book icon */
@@ -193,10 +186,6 @@ def main():
     user_question = st.text_input("Ask a Question from the PDF Files")
     if user_question:
         user_input(user_question)
-
-    result = safe_run(lambda: user_input(user_question))
-    if result:
-        st.write(result)
 
 
 if __name__ == "__main__":
