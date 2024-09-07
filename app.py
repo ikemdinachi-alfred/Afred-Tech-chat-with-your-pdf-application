@@ -47,7 +47,7 @@ def get_vector_store(text_chunks):
 def get_conversational_chain():
     prompt_template = """
     Answer the question as detailed as possible from the provided context. If the answer is not in the provided context, 
-    say 'Answer is not available in the context.' Please do not make up information. \n\n
+    say 'Answer rephrase to help me find answer for you in the right context.' Please do not make up information. \n\n
     Context: \n {context}\n
     Question: \n{question}\n
     Answer:
@@ -75,8 +75,95 @@ def user_input(user_question):
 
 # Main function to run the Streamlit app
 def main():
+    # Set the page configuration
     st.set_page_config(page_title="Alfred-Tech PDF Chat", layout="wide")
-    st.header("Alfred-Tech: Chat with Your PDF Files")
+
+    # Add custom styles for the header and footer
+    st.markdown(
+        """
+        <style>
+        /* Background gradient for the page */
+        body {
+            background: linear-gradient(to bottom right, #f0f4c3, #b3e5fc);
+        }
+
+        /* Alfred-Tech header styling */
+        h1 {
+            text-align: center;
+            font-size: 52px;
+            font-family: 'Arial', sans-serif;
+            font-weight: bold;
+            color: #f57c00;
+            text-shadow: 2px 2px 5px #ffa726;
+        }
+
+        /* PDF Chat header styling */
+        h2 {
+            text-align: center;
+            font-size: 36px;
+            font-family: 'Arial', sans-serif;
+            color: #1976d2;
+            text-shadow: 2px 2px 5px #64b5f6;
+        }
+
+        /* Styling for the book icon */
+        img {
+            vertical-align: middle;
+            margin-left: 10px;
+        }
+
+        /* Center content in the page */
+        .stApp {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        /* Footer styling */
+        .footer {
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            background-color: #1976d2;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            font-family: 'Arial', sans-serif;
+            font-size: 18px;
+        }
+
+        /* Decorative heart icon */
+        .heart {
+            color: red;
+            font-size: 22px;
+            vertical-align: middle;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+
+    # Add the headers with custom styles and a book icon
+    st.markdown(
+        """
+        <h1>Alfred-Tech</h1>
+        <h2>PDF Chat <img src="https://cdn-icons-png.flaticon.com/512/3081/3081392.png" width="40" height="40"></h2>
+        """,
+        unsafe_allow_html=True
+    )
+
+    # Add a footer with dedication
+    st.markdown(
+        """
+        <div class="footer">
+            <p>Dedicated to Mrs. F. Oluwatosin with love <span class="heart">❤️</span></p>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
     # Sidebar for PDF upload and processing
     with st.sidebar:
