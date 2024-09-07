@@ -73,6 +73,16 @@ def user_input(user_question):
     st.write("Reply: ", response["output_text"])
 
 
+def safe_run(func):
+    try:
+        result = func()
+        return result
+    except Exception as e:
+        st.error(f"An error occurred: {str(e)}")
+        # Log the error for further investigation if needed
+        print(f"Error: {str(e)}")
+
+
 # Main function to run the Streamlit app
 def main():
     # Set the page configuration
@@ -183,6 +193,10 @@ def main():
     user_question = st.text_input("Ask a Question from the PDF Files")
     if user_question:
         user_input(user_question)
+
+    result = safe_run(lambda: user_input(user_question))
+    if result:
+        st.write(result)
 
 
 if __name__ == "__main__":
